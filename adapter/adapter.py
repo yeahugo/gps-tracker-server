@@ -22,3 +22,6 @@ class Adapter():
         from .tk102 import tk102
         if tk102.decode(datastring):
             return tk102
+        from .tianqin import tianqin
+        if tianqin.decode(datastring):
+            return tianqin
