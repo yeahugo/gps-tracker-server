@@ -40,7 +40,7 @@ angular.module('app').controller('DashCtrl', function (
         $scope.devices.filter(function(d) {return d.id==id})[0]['viewing'] = true;
     };
     $scope.addDevice = function() {
-        if($scope.newImei.match(/\d{15}/)) {
+        if($scope.newImei.match(/\d{8}/)) {
             var p = Api.device.post({'imei'  : $scope.newImei});
             p.$promise.then(
                 function(resp_succ) {
@@ -54,7 +54,7 @@ angular.module('app').controller('DashCtrl', function (
             );
         }
         else {
-            alert('IMEI should be 15 digits');
+            alert('IMEI should be  8 digits');
         }
     };
     $scope.removeDevice = function(device_id) {
