@@ -20,6 +20,7 @@ def handle(sock, (clientip, clientport)):
             try:
                 device = GPSDevice.get_by_data(data, ipaddr=clientip)
             except Exception, e:
+		print e
                 logger.warning(e.message[:256])
                 time.sleep(10)
                 sock.close()

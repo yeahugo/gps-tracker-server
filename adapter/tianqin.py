@@ -2,8 +2,10 @@ from .adapter import Adapter
 from models import Message
 import re
 import config
+import time
 
 class tianqin(Adapter):
+    delimiter = ';'
 
     @classmethod
     def decode(cls, datastring):
@@ -18,17 +20,18 @@ class tianqin(Adapter):
             '(.+)#'
 
         if re.match(re_location_full,datastring):
-            imei = re.match(re_location_full, datastring).group('imei')
+	    match = re.match(re_location_full, datastring)
+            imei = match.group('imei')
             latitude = match.group('latitude')
-            latitude_hemisphere = match.group('latitude_hemishpere')
-            longitude = match.group('logitude')
+            latitude_hemisphere = match.group('latitude_hemisphere')
+            longitude = match.group('longitude')
             longitude_hemisphere = match.group('longitude_hemisphere')
 
-            message = Message(imei=imei,message_type=config.MESSAGE_TYPE_LOCATION_FULL,message_datastring=message_datastring)
+            message = Message(imei=imei,message_type=config.MESSAGE_TYPE_LOCATION_FULL,message_datastring=datastring)
 
             re_location = '^(\d+)(\d{2}\.\d+)$'
 
-            (h,m) = re.match(re_location, latitude).group
+            (h,m) = re.match(re_location, latitude).groups()
             h = float(h)
             m = float(m)
             latitude = h + m/60
@@ -36,7 +39,7 @@ class tianqin(Adapter):
             if 'S' == latitude_hemisphere:
             	latitude = -latitude
 
-            (h,m) = re.match(re_location, longitude).group
+            (h,m) = re.match(re_location, longitude).groups()
             h = float(h)
             m = float(m)
             longitude = h + m/60
@@ -59,4 +62,16 @@ class tianqin(Adapter):
         if config.MESSAGE_TYPE_REQ_LOCATION == message.message_type:
             resp = 'HQ,{imei},V4,{cmd}'.format(imei=message.imei, cmd='B')
             return resp
+
+    @classmethod
+    def response_to(cls, message):
+	print "message_type"+message.message_type
+	if type(message) in [str, unicode]:
+	    message = cls.decode(data)
+	if not message:
+	    return
+        if config.MESSAGE_TYPE_LOCATION_FULL == message.message_type:
+	    time_string = time.strftime('%H%M%S',time.localtime(time.time()))
+	    resp = '*HQ,{imei},D1,{time},{interval},1'.format(imei=message.imei, time=time_string, interval='60')
+	    return resp
 
