@@ -8,14 +8,14 @@ class tianqin(Adapter):
     @classmethod
     def decode(cls, datastring):
         #e.g. *HQ,4300248443,V1,160910,V,3958.7297,N,11621.6888,E,0.00,187,300314,FFE7FBFF#
-        re_location_full = '^*HQ,(?P<imei>\d{10}),' + \
-            'V1,(?P<local_time>\d{6})' + \
+        re_location_full = '^\*HQ,(?P<imei>\d{10}),' + \
+            'V1,(?P<local_time>\d{6}),' + \
             '(?P<validity>[AV]),'+ \
-            '(?P<latitude>\d+\.\+),' + \
+            '(?P<latitude>\d+\.\d+),' + \
             '(?P<latitude_hemisphere>[NS]),' + \
             '(?P<longitude>\d+\.\d+),' + \
             '(?P<longitude_hemisphere>)[EW],' + \
-            '\d+,\d+,\W+#'
+            '(.+)#'
 
         if re.match(re_location_full,datastring):
             imei = re.match(re_location_full, datastring).group('imei')
@@ -24,7 +24,7 @@ class tianqin(Adapter):
             longitude = match.group('logitude')
             longitude_hemisphere = match.group('longitude_hemisphere')
 
-            message = Message(imei=imei,message_type=config.MESSAGE_TYPE_LOCATION_FULL,message_datastring)
+            message = Message(imei=imei,message_type=config.MESSAGE_TYPE_LOCATION_FULL,message_datastring=message_datastring)
 
             re_location = '^(\d+)(\d{2}\.\d+)$'
 
@@ -33,8 +33,8 @@ class tianqin(Adapter):
             m = float(m)
             latitude = h + m/60
 
-            if 'S' == latitude_hemisphere
-            latitude = -latitude
+            if 'S' == latitude_hemisphere:
+            	latitude = -latitude
 
             (h,m) = re.match(re_location, longitude).group
             h = float(h)
@@ -57,7 +57,6 @@ class tianqin(Adapter):
         #resp = '**,imei:{imei},{cmd}'.format(imei=imei, cmd='B')
         """
         if config.MESSAGE_TYPE_REQ_LOCATION == message.message_type:
-            resp = 'HQ,{imei},V4,{cmd},time1'.format(imei=message.imei, cmd='B',message.time)
+            resp = 'HQ,{imei},V4,{cmd}'.format(imei=message.imei, cmd='B')
             return resp
-
 

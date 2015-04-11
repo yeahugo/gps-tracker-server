@@ -17,11 +17,13 @@ class Adapter():
 
     @classmethod
     def detect(cls, datastring):
+	from .tianqin import tianqin
+	from .tk102 import tk102
         # Given a datastring, determine adapter type it's for
         # and return this adapter's class
-        from .tk102 import tk102
+	print "data string "+datastring
         if tk102.decode(datastring):
+	    print "detect tk102 "+tk102
             return tk102
-        from .tianqin import tianqin
-        if tianqin.decode(datastring):
+        elif tianqin.decode(datastring):
             return tianqin

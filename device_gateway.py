@@ -11,6 +11,8 @@ def handle(sock, (clientip, clientport)):
     device = None
     while True:
         data = sock.recv(config.DEVICE_GATEWAY_RECV_SIZE)
+	print time.strftime("%Y-%m-%d %A %X %Z", time.localtime())
+	print "receive ---"+data
         if not data:
             break
         logger.info('%s > %s' % (clientip, data[:256]))
