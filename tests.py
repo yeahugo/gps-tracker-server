@@ -17,6 +17,8 @@ tk102_datastrings = [
     tk102_init_string,
 ]
 
+gps20_location_full_string = '(027042873950BR00150410A3958.3988N11626.7076E000.81510050.000000000000L00000000)'
+
 class TestModels(unittest.TestCase):
     def setUp(self):
         User.objects.delete({'email':'test@test.com'})
@@ -136,3 +138,7 @@ class TestModels(unittest.TestCase):
         d = GPSDevice()
         assert(False==d.is_online)
 
+class TestGps20(unittest.TestCase):
+    def test_gpsdevice_tk102_response_location(self):
+        d = GPSDevice.get_by_data(gps20_location_full_string)
+        d.sent(gps20_location_full_string)
