@@ -19,6 +19,7 @@ class Message(mongoengine.Document):
     latitude = mongoengine.DecimalField()
     longitude = mongoengine.DecimalField()
     created = mongoengine.DateTimeField(default=datetime.datetime.utcnow)
+    validity = mongoengine.DecimalField()
     
     @classmethod
     def dequeue_response(self, imei):

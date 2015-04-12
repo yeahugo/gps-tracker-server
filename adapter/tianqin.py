@@ -67,7 +67,7 @@ def handleBinaryLocation(datastring):
 			'(?P<latitude>\d{8})' + \
 			'00' + \
 			'(?P<longitude>\d{9})' + \
-			'(?P<last_longitude>\w)' + \
+			'(?P<location_flag>\w)' + \
 			'(?P<speed>\d{6})' + \
 			'(?P<status>\w{8})' + \
 			'(?P<alarm>\w{2})' + '0000'
@@ -77,6 +77,16 @@ def handleBinaryLocation(datastring):
         imei = match.group('imei')
         latitude = match.group('latitude')
         longitude = match.group('longitude')
+
+	location_flag = int(match.group('location_flag'),16)
+	longitude_hemisphere = 'E' if location_flag&8!=0 else 'W' 
+	latitude_hemisphere = 'N' if location_flag&4!=0 else 'S'
+	location_validity = (location_flag&2!=0)
+
+	if longitude_hemisphere == 'S':
+	    longitude = -longitude
+	if latitude_hemisphere == 'W':
+	    latitude = -latitude
 
 	message = Message(imei=imei,message_type=config.MESSAGE_TYPE_LOCATION_FULL,message_datastring=datastring)
 	re_binary_location = '^(\d{2})(\d{6})$'
@@ -88,6 +98,7 @@ def handleBinaryLocation(datastring):
 	longitude = float(h) + float(m)/10000/60
 	message.latitude = latitude
 	message.longitude = longitude
+	message.validity = int(location_validity)
 	return message
     else:
 	return None
