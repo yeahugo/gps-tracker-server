@@ -40,7 +40,7 @@ angular.module('app').controller('DashCtrl', function (
         $scope.devices.filter(function(d) {return d.id==id})[0]['viewing'] = true;
     };
     $scope.addDevice = function() {
-        if($scope.newImei.match(/\d{8}/)) {
+        if($scope.newImei.match(/\d{8,12}/)) {
             var p = Api.device.post({'imei'  : $scope.newImei});
             p.$promise.then(
                 function(resp_succ) {

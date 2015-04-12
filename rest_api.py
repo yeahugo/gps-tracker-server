@@ -159,7 +159,8 @@ def add_device():
         raise BadRequest()
     if not data.get('imei', None):
         raise BadRequest('imei required')
-    if not re.match('^\d{15}$', data['imei']):
+    if not re.match('^\d{8,15}$', data['imei']):
+	print "imei length error"
         raise BadRequest('imei must be 15 digits long')
     try:
         device = GPSDevice.objects.get(imei=data['imei'])
