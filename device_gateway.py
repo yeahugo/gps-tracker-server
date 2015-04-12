@@ -5,6 +5,7 @@ import sys
 import time
 from models import GPSDevice
 from logger import logger
+from struct import *
 
 def handle(sock, (clientip, clientport)):
     logger.info('New connection from %s:%s' % (clientip, clientport))

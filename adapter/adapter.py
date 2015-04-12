@@ -21,9 +21,7 @@ class Adapter():
 	from .tk102 import tk102
         # Given a datastring, determine adapter type it's for
         # and return this adapter's class
-	print "data string "+datastring
         if tk102.decode(datastring):
-	    print "detect tk102 "+tk102
             return tk102
         elif tianqin.decode(datastring):
             return tianqin
