@@ -2,3 +2,4 @@
 venv
 log
 .*.swp
+nohup.out
