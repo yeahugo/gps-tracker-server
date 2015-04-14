@@ -34,19 +34,24 @@ class gps20(Adapter):
 
             re_location = '^(\d+)(\d{2}\.\d+)$'
             (h, m) = re.match(re_location, latitude).groups()
-            h = float(h)
-            m = float(m)
-            latitude = h + m/60
+            latitude = float(h) + float(m)/60
             if 'S' == latitude_hemisphere:
                 latitude = -latitude
 
             (h, m) = re.match(re_location, longitude).groups()
-            h = float(h)
-            m = float(m)
-            longitude = h + m/60
+            longitude = float(h) + float(m)/60
             if 'W' == longitude_hemisphere:
                 longitude = -longitude
 
             message.latitude = latitude
             message.longitude = longitude
+	    return message
+        else:
+	    return None 
 
+    @classmethod
+    def response_to(cls, message):
+    if not message:
+        return  
+    elif config.MESSAGE_TYPE_LOCATION_FULL == message.message_type:
+	return 
