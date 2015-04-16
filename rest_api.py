@@ -150,6 +150,33 @@ def delete_device(id):
     device.delete()
     return 'ok'
 
+@app.route('/animal',methods=['POST'])
+def add_animal():
+    user = check_auth()
+    try:
+	data = json.loads(request.data)
+    except:
+    	raise BadRequest()
+    if not data.get('imei',None):
+        raise BadRequest('imei required')
+    try:
+	device = GPSDevice.objects.get(imei=data['imei'])
+        if device.user != user:
+    	    raise BadRequest('There was a problem adding that device')
+    animal = Animal()
+    animal.animal_type = data.get('type')
+    animal.gender = data.get('gender')
+    animal.age = data.get('age')
+    device.animal = animal
+    user.animals.append(animal)
+    animal.save()
+    device.save()
+    user.save()
+    resp = {
+	'id' : str(animal.id)
+    }
+    return json.dumps(resp)
+
 @app.route('/device', methods=['POST'])
 def add_device():
     user = check_auth()
@@ -216,6 +243,10 @@ def devices(device_id=None):
             resp.append(d)
     return json.dumps(resp)
 
+@app.route('/animals',methods=['GET'])
+def animals():
+    user = check_auth()
+    
 
 if __name__=='__main__':
     http = WSGIServer(('', 5000), app)

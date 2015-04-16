@@ -5,6 +5,7 @@ import unittest
 from models import Message
 from models import GPSDevice
 from models import User
+from models import *
 
 tk102_heartbeat_string = u'865328021048409;'
 tk102_location_low_string = 'imei:865328021048409,tracker,141210172556,0411959136,L,,,0BD4,,7A78,,,,,0,0,0.0%,,;'

@@ -1,6 +1,7 @@
 import config
 import bcrypt
 import datetime
+from mongoengine import *
 import mongoengine
 import random
 import hashlib
@@ -10,6 +11,12 @@ from adapter.adapter import Adapter
 
 mongoengine.connect(config.MONGO_DBNAME, host=config.MONGO_HOST, port=config.MONGO_PORT)
 
+class Catalog(mongoengine.Document):
+    animal_catalog = StringField()
+
+class SubCatalog(mongoengine.Document):
+    animal_type = ReferenceField(Catalog)
+    animal_sub_type = StringField()
 
 class Message(mongoengine.Document):
     message_type = mongoengine.StringField()
@@ -157,6 +164,15 @@ class GPSDevice(mongoengine.Document):
     def __str__(self):
         return 'GPSDevice imei %s, ip %s' % (self.imei, self.ipaddr)
 
+class Animal(mongoengine.Document):
+    animal_type = ReferenceField(Catalog) 
+    sub_type = ReferenceField(SubCatalog)
+    gender = IntField() 
+    birthday = DateTimeField(default=datetime.datetime.utcnow)
+    name = StringField()
+    icon_url = StringField()
+    device = ReferenceField(GPSDevice)
+    state = IntField()
 
 class User(mongoengine.Document):
     email = mongoengine.EmailField(required=True, unique=True)

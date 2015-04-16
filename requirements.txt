@@ -32,3 +32,4 @@ simplejson==3.5.2
 six==1.8.0
 wsgiref==0.1.2
 Flask-Cors==1.10.1
+Flask-Admin

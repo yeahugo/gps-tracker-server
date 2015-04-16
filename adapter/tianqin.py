@@ -128,8 +128,6 @@ class tianqin(Adapter):
 
     @classmethod
     def response_to(cls, message):
-	if type(message) in [str, unicode]:
-	    message = cls.decode(data)
 	if not message:
 	    return
         if config.MESSAGE_TYPE_LOCATION_FULL == message.message_type:
