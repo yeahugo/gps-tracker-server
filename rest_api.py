@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!usr/bin/env python
 import json
 import config
 import sys
@@ -133,6 +133,7 @@ def user_list(user_id=None):
                 '_id'       : str(u.id),
                 'email'     : str(u.email),
                 'devices'   : [str(d.id) for d in u.devices],
+		'animals'   : [str(a.id) for a in u.animals],
             })
     return json.dumps(resp)
 
@@ -150,6 +151,29 @@ def delete_device(id):
     device.delete()
     return 'ok'
 
+@app.route('/animal/<id>',methods=['GET'])
+def animal_detail():
+    user = check_auth()
+    try:
+	animal = Animal.objects.get(id=id)
+    except Animal.DoesNotExist:
+	raise NotFound()
+    if animal.device:
+	raise NotFound()
+    device = animal.device
+    resp = {
+	'id' 	: str(animal.id),
+        'name'  : str(animal.name),
+	'type'  : str(animal.type),
+	'sub_type':str(animal.sub_type),
+	'gender': animal.gender,
+	'birthday':str(animal.birthdat),
+	'latitude': device.latitude,
+	'longitude':device.longitude,
+	'location_time':device.location_time
+    }
+    return resp
+
 @app.route('/animal',methods=['POST'])
 def add_animal():
     user = check_auth()
@@ -163,10 +187,14 @@ def add_animal():
 	device = GPSDevice.objects.get(imei=data['imei'])
         if device.user != user:
     	    raise BadRequest('There was a problem adding that device')
+    except:
+    	device = GPSDevice(imei=data['imei'])	
+	user.devices.append(device)
     animal = Animal()
     animal.animal_type = data.get('type')
     animal.gender = data.get('gender')
     animal.age = data.get('age')
+    animal.name = data['name']
     device.animal = animal
     user.animals.append(animal)
     animal.save()
@@ -175,7 +203,7 @@ def add_animal():
     resp = {
 	'id' : str(animal.id)
     }
-    return json.dumps(resp)
+    return resp
 
 @app.route('/device', methods=['POST'])
 def add_device():
@@ -249,5 +277,5 @@ def animals():
     
 
 if __name__=='__main__':
-    http = WSGIServer(('', 5000), app)
+    http = WSGIServer(('', 5001), app)
     http.serve_forever()

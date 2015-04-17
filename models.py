@@ -56,6 +56,7 @@ class GPSDevice(mongoengine.Document):
     adapter = None
     latitude = mongoengine.DecimalField()
     longitude = mongoengine.DecimalField()
+    loation_time = mongoengine.DateTimeField()
 
     @property
     def messages(self):
@@ -102,7 +103,6 @@ class GPSDevice(mongoengine.Document):
             device.save()
         return device
         
-
     def pop_response(self):
         """ Get the current response, taking into account data read, and messages waiting
         """
@@ -155,6 +155,8 @@ class GPSDevice(mongoengine.Document):
                 m.message_datastring = self.adapter.encode(m)
                 m.save()
             self.responses.append(self.adapter.encode(m))
+       	    print "retrieve -----"
+	    print self.responses
             m = Message.dequeue_response(imei=self.imei)
 
     def delete(self):
@@ -179,6 +181,7 @@ class User(mongoengine.Document):
     password = mongoengine.StringField(required=True)
     api_key = mongoengine.StringField()
     devices = mongoengine.ListField(mongoengine.ReferenceField(GPSDevice))
+    animals = mongoengine.ListField(mongoengine.ReferenceField(Animal))
 
     @classmethod
     def check_api_key(self, api_key):

@@ -61,7 +61,6 @@ def handleFullLocation(datastring):
 
 def handleBinaryLocation(datastring):
     datastring = hexlify(datastring) 
-    logger.info('hexlify is %s' % datastring)
     re_location_full = '^(\d{2})(?P<imei>\d{10})' + \
 			'(?P<local_time>\d{6})' + \
 			'(?P<local_date>\d{6})' + \
