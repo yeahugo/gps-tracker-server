@@ -1,4 +1,3 @@
-#!usr/bin/env python
 import json
 import config
 import sys
@@ -164,10 +163,10 @@ def animal_detail():
     resp = {
 	'id' 	: str(animal.id),
         'name'  : str(animal.name),
-	'type'  : str(animal.type),
+	'type'  : str(animal.animal_type),
 	'sub_type':str(animal.sub_type),
 	'gender': animal.gender,
-	'birthday':str(animal.birthdat),
+	'birthday':str(animal.birthday),
 	'latitude': device.latitude,
 	'longitude':device.longitude,
 	'location_time':device.location_time
@@ -178,6 +177,7 @@ def animal_detail():
 def add_animal():
     user = check_auth()
     try:
+	print request.data
 	data = json.loads(request.data)
     except:
     	raise BadRequest()
@@ -188,13 +188,14 @@ def add_animal():
         if device.user != user:
     	    raise BadRequest('There was a problem adding that device')
     except:
-    	device = GPSDevice(imei=data['imei'])	
-	user.devices.append(device)
+ 	device = GPSDevice(imei=data['imei'])   
     animal = Animal()
-    animal.animal_type = data.get('type')
-    animal.gender = data.get('gender')
-    animal.age = data.get('age')
+    animal.animal_type = data['type']
+    animal.gender = data['gender']
+    animal.age = data['age']
     animal.name = data['name']
+    animal.sub_type = data['sub_type']
+    animal.device = device
     device.animal = animal
     user.animals.append(animal)
     animal.save()
@@ -209,6 +210,8 @@ def add_animal():
 def add_device():
     user = check_auth()
     try:
+        print request.data
+        print request
         data = json.loads(request.data)
     except:
         raise BadRequest()
@@ -271,10 +274,41 @@ def devices(device_id=None):
             resp.append(d)
     return json.dumps(resp)
 
-@app.route('/animals',methods=['GET'])
-def animals():
+@app.route('/animal',methods=['GET'])
+@app.route('/animal/<animal_id>',methods=['GET'])
+def animals(animal_id=None):
     user = check_auth()
-    
+    if animal_id:
+	try:
+	    animal = filter(lambda a:str(d.id)==animal_id,user.animals)[0]
+	    device = a.device
+	    resp = {
+		'id'		:str(animal.id),
+		'name'		:animal.name,
+		'birthday'	:animal.birthday,
+		'type'		:animal.animal_type,
+		'sub_type'	:animal.sub_type,
+		'gender'	:animal.gender,
+		'latitude'	:device.latitude,
+		'longitude'	:device.longitude
+	    }
+	except:
+	    raise NotFound()
+    else:
+	resp = []
+	for animal in user.animals:
+	    a = {
+		'id'		:str(animal.id),
+		'name'		:animal.name,
+		'birthday'	:animal.birthday,
+		'type'		:animal.animal_type,
+		'sub_type'	:animal.sub_type,
+		'gender'	:animal.gender,
+		'latitude'	:device.latitude,
+		'longitude'	:device.longitude
+	    }
+	    resp.append(a)
+    return json.dumps(resp)
 
 if __name__=='__main__':
     http = WSGIServer(('', 5001), app)
